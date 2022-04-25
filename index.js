@@ -1,0 +1,189 @@
+// const fs = require('fs');
+// const path = require('path');
+const inquirer = require('inquirer');
+// const Choices = require('inquirer/lib/objects/choices');
+// const profileDataArgs = process.argv.slice(2, process.argv.length);
+// const generateMarkdown = require('./utils/generateMarkdown');
+// const Engineer = require('./lib/Engineer');
+// const Intern = require('./lib/Intern.js');
+// const Manager = require('./lib/Manager');
+const connection = require('./server.js');
+const HR = require('./lib/Queries');
+
+
+
+
+// An array of questions and answers for user input
+const answersArray = [];
+const questions = [
+
+  {
+    type: "list",
+    name: 'initialQuestion', //employeeType
+    message: "What would you like to do?",
+    choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an emplyoee role']
+  },
+
+
+  // {
+  //   type: "input",
+  //   name: 'userName',
+  //   message: "What is your Github username?",
+  //   when: function (answers) {
+  //     return answers.initialQuestion == 'View all departments'
+  //   }
+  // },
+
+  // {
+  //   type: "list",
+  //   name: 'employeeType',
+  //   message: "What is the role of the employee?",
+  //   choices: ['Engineer', 'Manager', 'Intern']
+  // },
+
+  // {
+  //   type: "input",
+  //   name: 'email',
+  //   message: "What is your email?"
+  // },
+
+  // {
+  //   type: "input",
+  //   name: 'id',
+  //   message: "What is your employee ID?"
+  // },
+
+  // {
+  //   type: "input",
+  //   name: 'name',
+  //   message: "What is the employee's name?"
+  // },
+
+  // {
+  //   type: "input",
+  //   name: 'userName',
+  //   message: "What is your Github username?",
+  //   when: function (answers) {
+  //     return answers.employeeType == 'Engineer'
+  //   }
+  // },
+
+  // {
+  //   type: "input",
+  //   name: 'officeNumber',
+  //   message: "What is the employee's office number?",
+  //   when: function (answers) {
+  //     return answers.employeeType == 'Manager'
+  //   }
+  // },
+  // {
+  //   type: "input",
+  //   name: 'school',
+  //   message: "What is the intern's school?",
+  //   when: function (answers) {
+  //     return answers.employeeType == 'Intern'
+  //   }
+  // },
+  // {
+  //   type: "confirm",
+  //   name: 'anotherEmployee',
+  //   message: "Is there another employee?",
+  //   default: true
+  // },
+];
+
+function startGame() {
+  inquirer
+    .prompt(
+      /* Pass questions in here */
+      questions
+    )
+    .then((answers) => {
+      console.log(answers);
+      // answersArray.push(answers);
+      processAnswers(answers)
+
+      if (answers.anotherEmployee == true) {
+        startGame();
+      } else {
+        generatePage(answersArray);
+        console.log(answersArray);
+      }
+
+    })
+    .catch((error) => {
+      if (error.isTtyError) {
+        // Prompt couldn't be rendered in the current environment
+      } else {
+        // Something else went wrong
+      }
+    });
+};
+
+
+
+
+async function processAnswers(answers) {
+  if (answers.initialQuestion == 'View all departments') {                                       
+    // const response = await connection.promise().query('SELECT * FROM department');
+    // console.table(response[0]);
+    const departments = new HR(connection)
+    const response = await departments.getDepartments();
+    console.table(response[0]);
+
+  } else if(answers.initialQuestion == 'View all roles'){     
+   
+    const response = await connection.promise().query('SELECT * FROM roleTable');
+    // const roles = new HR(connection)             
+    // const response = await roles.getRoles();
+    console.table(response[0]);
+
+  } else if(answers.initialQuestion == 'View all employees'){                  
+    const intern = new Intern(answers.name, answers.id, answers.email, answers.school);
+    answersArray.push(intern);
+
+  } else if(answers.initialQuestion == 'Add a department'){                  
+    // const intern = new Intern(answers.name, answers.id, answers.email, answers.school);
+    // answersArray.push(intern);
+    const nameOfDepartment = await inquirer.prompt([{
+      type: "input",
+      name: 'departmentName',
+      message: "What is the department's name?"
+    }]); 
+    // await connection.promise().query('INSERT INTO department SET department_name = ?', nameOfDepartment.departmentName)
+    const newDepartment = new HR(connection)
+    await newDepartment.addDepartment(nameOfDepartment.departmentName);
+    const response = await newDepartment.getDepartments();
+    console.table(response[0]);
+    
+    
+  } else if(answers.initialQuestion == 'Add a role'){                  
+    const intern = new Intern(answers.name, answers.id, answers.email, answers.school);
+    answersArray.push(intern);
+
+  } else if(answers.initialQuestion == 'Add an employee'){                  
+    const intern = new Intern(answers.name, answers.id, answers.email, answers.school);
+    answersArray.push(intern);
+    
+  } else {                            //update an employee
+    const manager = new Manager(answers.name, answers.id, answers.email, answers.officeNumber);
+    answersArray.push(manager);
+  }
+
+}; 
+
+// Create a function to write html file
+const generatePage = (answers) => {
+
+  fs.writeFile('index.html', generateMarkdown(answers), (err) => {
+    if (err) {
+      console.error(err);
+      console.log(answers);
+      console.log(answersArray);
+      return
+    }
+    console.log('wrote to file successfully')
+  })
+};
+
+startGame();
