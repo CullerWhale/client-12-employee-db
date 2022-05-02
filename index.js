@@ -9,6 +9,7 @@ const inquirer = require('inquirer');
 // const Manager = require('./lib/Manager');
 const connection = require('./server.js');
 const HR = require('./lib/Queries');
+const { execute } = require('./server.js');
 
 
 
@@ -133,17 +134,15 @@ async function processAnswers(answers) {
 
   } else if(answers.initialQuestion == 'View all roles'){     
    
-    // const response = await connection.promise().query('SELECT * FROM roleTable');
-    // console.table(response[0]);
-
-    console.log('hi');
-    // const roles = new HR(connection)             
-    // const response = await roles.getRoles();
+    const response = await connection.promise().query('SELECT * FROM roleTable JOIN department ON department.id=roleTable.department_id');
+    console.table(response[0]);
     
 
   } else if(answers.initialQuestion == 'View all employees'){                  
-    const intern = new Intern(answers.name, answers.id, answers.email, answers.school);
-    answersArray.push(intern);
+    const response = await connection.promise().query('SELECT m.first_name AS managerFirstName, m.last_name AS managerLastName, e.first_name, e.last_name FROM employeeTable e JOIN employeeTable m ON e.manager_id = m.id');
+    console.table(response[0]);
+    
+    // add regular join statements to this for department etc...
 
   } else if(answers.initialQuestion == 'Add a department'){                  
     // const intern = new Intern(answers.name, answers.id, answers.email, answers.school);
