@@ -22,70 +22,10 @@ const questions = [
     type: "list",
     name: 'initialQuestion', //employeeType
     message: "What would you like to do?",
-    choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an emplyoee role']
+    choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role']
   },
 
-
-  // {
-  //   type: "input",
-  //   name: 'userName',
-  //   message: "What is your Github username?",
-  //   when: function (answers) {
-  //     return answers.initialQuestion == 'View all departments'
-  //   }
-  // },
-
-  // {
-  //   type: "list",
-  //   name: 'employeeType',
-  //   message: "What is the role of the employee?",
-  //   choices: ['Engineer', 'Manager', 'Intern']
-  // },
-
-  // {
-  //   type: "input",
-  //   name: 'email',
-  //   message: "What is your email?"
-  // },
-
-  // {
-  //   type: "input",
-  //   name: 'id',
-  //   message: "What is your employee ID?"
-  // },
-
-  // {
-  //   type: "input",
-  //   name: 'name',
-  //   message: "What is the employee's name?"
-  // },
-
-  // {
-  //   type: "input",
-  //   name: 'userName',
-  //   message: "What is your Github username?",
-  //   when: function (answers) {
-  //     return answers.employeeType == 'Engineer'
-  //   }
-  // },
-
-  // {
-  //   type: "input",
-  //   name: 'officeNumber',
-  //   message: "What is the employee's office number?",
-  //   when: function (answers) {
-  //     return answers.employeeType == 'Manager'
-  //   }
-  // },
-  // {
-  //   type: "input",
-  //   name: 'school',
-  //   message: "What is the intern's school?",
-  //   when: function (answers) {
-  //     return answers.employeeType == 'Intern'
-  //   }
-  // },
-  // {
+  // ,{
   //   type: "confirm",
   //   name: 'anotherEmployee',
   //   message: "Is there another employee?",
@@ -166,17 +106,17 @@ async function processAnswers(answers) {
     
     
   } else if(answers.initialQuestion == 'Add a role'){                  
-    const nameOfRole = await inquirer.prompt([{
+    const roleDetails = await inquirer.prompt([{
       type: "input",
       name: 'roleName',
       message: "What is the name of the role?"
     }
-    // ,{
-    //   type: "input",
-    //   name: 'salaryFigure',
-    //   message: "What is the salary?"
-    // }, 
-    // {
+    ,{
+      type: "input",
+      name: 'salaryFigure',
+      message: "What is the salary?"
+    } 
+    //, {
     //   type: "input",
     //   name: 'roleDepartment',
     //   message: "What department does the role belong to?"
@@ -185,10 +125,16 @@ async function processAnswers(answers) {
   ]); 
 
   const newRole = new HR(connection)
-  await newRole.addRole(nameOfRole.roleName);
+  await newRole.addRole(roleDetails.roleName);
+  
+
+  const newRoleSalary = new HR(connection)
+  await newRoleSalary.addRoleSalary(roleDetails.salaryFigure);
+// get department_id also
+
   const response = await newRole.getRoles();
   console.table(response[0]);
-  
+  //inject response into roleTable
 
   startGame();
 
