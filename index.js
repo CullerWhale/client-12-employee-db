@@ -132,15 +132,20 @@ async function processAnswers(answers) {
     const response = await departments.getDepartments();
     console.table(response[0]);
 
+    startGame();
+
   } else if(answers.initialQuestion == 'View all roles'){     
    
     const response = await connection.promise().query('SELECT * FROM roleTable JOIN department ON department.id=roleTable.department_id');
     console.table(response[0]);
     
+    startGame();
 
   } else if(answers.initialQuestion == 'View all employees'){                  
     const response = await connection.promise().query('SELECT m.first_name AS managerFirstName, m.last_name AS managerLastName, e.first_name, e.last_name FROM employeeTable e JOIN employeeTable m ON e.manager_id = m.id');
     console.table(response[0]);
+
+    startGame();
     
     // add regular join statements to this for department etc...
 
@@ -157,11 +162,35 @@ async function processAnswers(answers) {
     await newDepartment.addDepartment(nameOfDepartment.departmentName);
     const response = await newDepartment.getDepartments();
     console.table(response[0]);
+    startGame();
     
     
   } else if(answers.initialQuestion == 'Add a role'){                  
-    const intern = new Intern(answers.name, answers.id, answers.email, answers.school);
-    answersArray.push(intern);
+    const nameOfRole = await inquirer.prompt([{
+      type: "input",
+      name: 'roleName',
+      message: "What is the name of the role?"
+    }
+    // ,{
+    //   type: "input",
+    //   name: 'salaryFigure',
+    //   message: "What is the salary?"
+    // }, 
+    // {
+    //   type: "input",
+    //   name: 'roleDepartment',
+    //   message: "What department does the role belong to?"
+    // }
+  
+  ]); 
+
+  const newRole = new HR(connection)
+  await newRole.addRole(nameOfRole.roleName);
+  const response = await newRole.getRoles();
+  console.table(response[0]);
+  
+
+  startGame();
 
   } else if(answers.initialQuestion == 'Add an employee'){                  
     const intern = new Intern(answers.name, answers.id, answers.email, answers.school);
