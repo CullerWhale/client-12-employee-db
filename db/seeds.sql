@@ -1,3 +1,5 @@
+use hr_db;
+
 INSERT INTO department (department_name)
 VALUES ('Engineering'), 
         ('Management'),
@@ -5,12 +7,12 @@ VALUES ('Engineering'),
         ('Sales') 
 
 
-INSERT INTO roleTable (id, roleTitle, salary, department_name)
-VALUES (1, 'CEO', 100000, 'Management'), 
-        (2, 'VP', 90000, "Management"),
-        (3, 'Lead', 80000, "Engineering"),
-        (4, 'Senior', 75000, "Engineering"), 
-        (5, 'Intern', 30000, "Human Resources"),
-        (6, 'Culture Bro', 40000, "Human Resources")
+INSERT INTO roleTable (roleTitle, salary, department_id)
+VALUES ('CEO', 100000, 2), 
+        ('VP', 90000, 2),
+        ('Lead', 80000, 1),
+        ('Senior', 75000, 1), 
+        ('Intern', 30000, 3),
+        ('Culture Bro', 40000, 3)
 
         

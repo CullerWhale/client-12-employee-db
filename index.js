@@ -133,10 +133,13 @@ async function processAnswers(answers) {
 
   } else if(answers.initialQuestion == 'View all roles'){     
    
-    const response = await connection.promise().query('SELECT * FROM roleTable');
+    // const response = await connection.promise().query('SELECT * FROM roleTable');
+    // console.table(response[0]);
+
+    console.log('hi');
     // const roles = new HR(connection)             
     // const response = await roles.getRoles();
-    console.table(response[0]);
+    
 
   } else if(answers.initialQuestion == 'View all employees'){                  
     const intern = new Intern(answers.name, answers.id, answers.email, answers.school);
