@@ -116,20 +116,17 @@ async function processAnswers(answers) {
       name: 'salaryFigure',
       message: "What is the salary?"
     } 
-    //, {
-    //   type: "input",
-    //   name: 'roleDepartment',
-    //   message: "What department does the role belong to?"
-    // }
+    , {
+      type: "input",
+      name: 'roleDepartment',
+      message: "What department does the role belong to?"
+    }
   
   ]); 
 
   const newRole = new HR(connection)
-  await newRole.addRole(roleDetails.roleName);
+  await newRole.addRole(roleDetails.roleName, roleDetails.salaryFigure, roleDetails.roleDepartment);
   
-
-  const newRoleSalary = new HR(connection)
-  await newRoleSalary.addRoleSalary(roleDetails.salaryFigure);
 // get department_id also
 
   const response = await newRole.getRoles();
@@ -143,24 +140,34 @@ async function processAnswers(answers) {
     answersArray.push(intern);
     
   } else {                            //update an employee
-    const manager = new Manager(answers.name, answers.id, answers.email, answers.officeNumber);
-    answersArray.push(manager);
+    const updateEmployee = await inquirer.prompt([{
+      type: 'input',
+      name: 'employeeUpdated',
+      message: 'What employee would you like to update?'
+    },
+  
+  {
+    type: 'input',
+      name: 'roleUpdate',
+      message: 'What role?'
+  }])
   }
-
+  const updatedEmployeeRole = new HR(connection)
+  await updatedEmployeeRole.addRole(updateEmployee.employeeUpdated, updateEmployee.roleUpdate);
 }; 
 
 // Create a function to write html file
-const generatePage = (answers) => {
+// const generatePage = (answers) => {
 
-  fs.writeFile('index.html', generateMarkdown(answers), (err) => {
-    if (err) {
-      console.error(err);
-      console.log(answers);
-      console.log(answersArray);
-      return
-    }
-    console.log('wrote to file successfully')
-  })
-};
+//   fs.writeFile('index.html', generateMarkdown(answers), (err) => {
+//     if (err) {
+//       console.error(err);
+//       console.log(answers);
+//       console.log(answersArray);
+//       return
+//     }
+//     console.log('wrote to file successfully')
+//   })
+// };
 
 startGame();
